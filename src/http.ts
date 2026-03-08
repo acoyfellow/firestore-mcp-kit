@@ -99,7 +99,11 @@ async function readBody(req: IncomingMessage) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
   }
 
-  return chunks.length > 0 ? Buffer.concat(chunks).toString('utf8') : undefined
+  if (chunks.length === 0) {
+    return undefined
+  }
+
+  return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown
 }
 
 function writeJson(res: ServerResponse, statusCode: number, body: unknown) {
