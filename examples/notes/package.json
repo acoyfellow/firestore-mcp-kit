@@ -1,0 +1,16 @@
+{
+  "name": "@firestore-mcp-kit/example-notes",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b --pretty false"
+  },
+  "dependencies": {
+    "@firestore-mcp-kit/core": "0.1.0",
+    "@firestore-mcp-kit/http": "0.1.0",
+    "@firestore-mcp-kit/stdio": "0.1.0",
+    "zod": "^4.3.6"
+  }
+}
