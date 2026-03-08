@@ -69,6 +69,15 @@ npm run dev:stdio
 npm run dev:http
 ```
 
+Use a real Firestore project with a local service-account file:
+
+```bash
+export GOOGLE_APPLICATION_CREDENTIALS=./credentials.json
+npm run dev:http:firestore
+```
+
+Keep credentials out of git. The repo ignores common credential file names by default.
+
 HTTP default endpoint:
 
 - `http://localhost:8000/mcp`
@@ -83,10 +92,7 @@ HTTP default endpoint:
 3. Create a `FirestoreResource`:
 
 ```ts
-const resource: FirestoreResource = {
-  firestore,
-  path: (id) => `notes/${id}`,
-}
+const resource = createFirestoreResource(firestore, (id) => `notes/${id}`)
 ```
 
 4. Implement tools with `defineTool(...)`.
@@ -184,3 +190,7 @@ Because unrestricted patching is too broad for the default path. Safe write beha
 ### Why keep transports thin?
 
 Because the same tool definitions should work over stdio or HTTP without changing domain logic.
+
+### When should I use this instead of Firebase's MCP server?
+
+Use this library when you want Firestore behind a narrow app contract instead of exposing broader platform capabilities directly. It is a better fit when you want tool names like `notes.create` or `tickets.assign`, app-owned Zod schemas, explicit authorization hooks, and constrained writes. Firebase's MCP server is a better fit when you want a more complete Firebase-integrated server with less userland code and are comfortable with a more platform-shaped surface area.

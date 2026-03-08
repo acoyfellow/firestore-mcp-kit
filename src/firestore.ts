@@ -53,3 +53,17 @@ export async function deleteDocument<TDocument>(
 ) {
   await resource.firestore.doc<TDocument>(resource.path(id)).delete()
 }
+
+export interface FirestorePathFactory {
+  readonly path: (id: string) => string
+}
+
+export function createFirestoreResource(
+  firestore: FirestoreClient,
+  path: FirestorePathFactory['path']
+): FirestoreResource {
+  return {
+    firestore,
+    path,
+  }
+}

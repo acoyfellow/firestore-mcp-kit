@@ -4,3 +4,7 @@ coverage/
 .vitest/
 *.tsbuildinfo
 .env
+
+credentials.json
+*.credentials.json
+*.service-account.json

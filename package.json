@@ -8,6 +8,7 @@
     "build": "tsc -b",
     "clean": "find . -name dist -type d -prune -exec rm -rf {} + && find . -name '*.tsbuildinfo' -delete",
     "dev:http": "tsx examples/notes/src/http.ts",
+    "dev:http:firestore": "tsx examples/notes/src/http-firestore.ts",
     "dev:stdio": "tsx examples/notes/src/stdio.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",
+    "firebase-admin": "^13.7.0",
     "zod": "^4.3.6",
     "zod-to-json-schema": "^3.25.1"
   },

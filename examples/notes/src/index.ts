@@ -9,6 +9,7 @@ import {
   pickPatchedFields,
   setDocument,
   updateDocument,
+  createFirestoreResource,
   type FirestoreClient,
   type FirestoreResource,
 } from '../../../src/index.js'
@@ -31,10 +32,7 @@ export type Note = z.infer<typeof NoteSchema>
 export function createNotesResource(
   firestore: FirestoreClient
 ): FirestoreResource {
-  return {
-    firestore,
-    path: (id) => `notes/${id}`,
-  }
+  return createFirestoreResource(firestore, (id) => `notes/${id}`)
 }
 
 const CreateNoteInput = z.object({
