@@ -2,19 +2,20 @@
   "name": "firestore-mcp-kit",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Build secure, typed MCP tools backed by Firestore.",
-  "workspaces": [
-    "packages/*",
-    "examples/*"
-  ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "clean": "find . -name dist -type d -prune -exec rm -rf {} +",
+    "build": "tsc -b",
+    "clean": "find . -name dist -type d -prune -exec rm -rf {} + && find . -name '*.tsbuildinfo' -delete",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b --pretty false"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

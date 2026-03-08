@@ -4,10 +4,6 @@ import { AuthorizationError, ValidationError } from './errors.js'
 
 export type MaybePromise<T> = T | Promise<T>
 
-export interface ToolExecutionContext<TContext> {
-  readonly context: TContext
-}
-
 export interface ToolDefinition<
   TContext,
   TInputSchema extends ZodType,

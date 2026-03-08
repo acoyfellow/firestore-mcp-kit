@@ -1,9 +1,8 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/http" },
-    { "path": "./packages/stdio" },
-    { "path": "./examples/notes" }
-  ]
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*.ts", "examples/**/*.ts", "test/**/*.ts"]
 }
