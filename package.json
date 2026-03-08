@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "find . -name dist -type d -prune -exec rm -rf {} + && find . -name '*.tsbuildinfo' -delete",
-    "dev:http": "node --experimental-strip-types examples/notes/src/http.ts",
-    "dev:stdio": "node --experimental-strip-types examples/notes/src/stdio.ts",
+    "dev:http": "tsx examples/notes/src/http.ts",
+    "dev:stdio": "tsx examples/notes/src/stdio.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -26,6 +26,7 @@
     "eslint": "^9.36.0",
     "globals": "^16.4.0",
     "prettier": "^3.6.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.44.1",
     "vitest": "^4.0.18"
