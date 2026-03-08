@@ -7,6 +7,8 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "find . -name dist -type d -prune -exec rm -rf {} + && find . -name '*.tsbuildinfo' -delete",
+    "dev:http": "node --experimental-strip-types examples/notes/src/http.ts",
+    "dev:stdio": "node --experimental-strip-types examples/notes/src/stdio.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
