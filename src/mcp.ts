@@ -45,7 +45,11 @@ export function createMcpServer<TContext>(options: {
   server.setRequestHandler(
     CallToolRequestSchema,
     async (request): Promise<CallToolResult> => {
-      const tool = options.tools[request.params.name]
+      const tool =
+        options.tools[request.params.name] ??
+        Object.values(options.tools).find(
+          (candidate) => candidate.name === request.params.name
+        )
 
       if (!tool) {
         return {
