@@ -2,53 +2,134 @@
 
 Build secure, typed MCP tools backed by Firestore.
 
-A minimal TypeScript library for:
+`firestore-mcp-kit` is a minimal TypeScript library for defining explicit MCP tools in userland, validating them with Zod, and wiring them to document-centric Firestore operations.
 
-- defining explicit MCP-style tools in userland
-- validating inputs and outputs with Zod
-- wrapping document-centric Firestore operations
-- constraining updates with explicit patch schemas
+It stays intentionally small:
 
-This repo is intentionally small. Firestore is storage, not the public contract.
+- Firestore is storage, not the public contract
+- schemas and policies live in app code
+- writes should be narrow and explicit
+- transports should stay thin
 
 ## Tutorial
 
-Start with the notes example in `examples/notes/src/index.ts`.
+Build from the example in `examples/notes/src/index.ts`.
 
-It shows how to:
+The flow is:
 
-1. define a note schema in userland
-2. define explicit tools like `notes.create` and `notes.update`
-3. validate inputs and outputs
-4. restrict updates to specific fields
+1. define a resource schema with Zod
+2. define explicit tool input/output schemas
+3. create a Firestore resource path function
+4. implement tools with `defineTool(...)`
+5. run them over stdio or HTTP
+
+### Minimal shape
+
+```ts
+const NoteSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  body: z.string(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+})
+
+const notes = defineNotesTools(resource)
+```
+
+Run the example:
+
+```bash
+npm run dev:stdio
+npm run dev:http
+```
+
+HTTP default endpoint:
+
+- `http://localhost:8000/mcp`
+- health check: `http://localhost:8000/health`
 
 ## How-to guides
 
 ### Add a resource
 
-- define a Zod schema for the resource
-- define input/output schemas per tool
-- create a `FirestoreResource` with a path function
-- implement tools with `defineTool(...)`
+1. Define a resource schema in userland.
+2. Define explicit input/output schemas per tool.
+3. Create a `FirestoreResource`:
+
+```ts
+const resource: FirestoreResource = {
+  firestore,
+  path: (id) => `notes/${id}`,
+}
+```
+
+4. Implement tools with `defineTool(...)`.
+5. Execute them directly or expose them through a transport.
 
 ### Restrict writable fields
 
-- use `createPatchSchema([...])`
-- use `pickPatchedFields(...)`
-- only persist allowed keys
+Use `createPatchSchema(...)` and `pickPatchedFields(...)`.
+
+```ts
+const NotePatchSchema = createPatchSchema(['title', 'body']).extend({
+  title: z.string().min(1).optional(),
+  body: z.string().optional(),
+})
+```
+
+This keeps update behavior explicit and avoids broad arbitrary patching.
+
+### Run over stdio
+
+```ts
+await startStdioServer({
+  name: 'notes-example',
+  version: '0.1.0',
+  tools,
+  getContext: async () => ({ actorId: 'local-user', canDelete: true }),
+})
+```
+
+### Run over HTTP
+
+```ts
+await startHttpServer({
+  name: 'notes-example',
+  version: '0.1.0',
+  port: 8000,
+  tools,
+  getContext: async () => ({ actorId: 'local-user', canDelete: true }),
+})
+```
 
 ## Reference
 
-### Core exports
+### Core tool API
 
 - `defineTool(...)`
 - `executeTool(...)`
-- `createPatchSchema(...)`
-- `pickPatchedFields(...)`
+- `createMcpServer(...)`
+
+### Transport helpers
+
+- `startStdioServer(...)`
+- `startHttpServer(...)`
+
+### Firestore helpers
+
 - `getDocument(...)`
 - `setDocument(...)`
 - `updateDocument(...)`
 - `deleteDocument(...)`
+
+### Patch helpers
+
+- `createPatchSchema(...)`
+- `pickPatchedFields(...)`
+
+### Errors
+
 - `FirestoreMcpError`
 - `AuthorizationError`
 - `ValidationError`
@@ -63,14 +144,18 @@ It shows how to:
 
 ## Explanation
 
-### Why this stays small
+### Why not expose raw Firestore directly?
 
-This library does not expose arbitrary Firestore browsing, arbitrary collection access, or unrestricted patching.
+Because MCP tools should expose narrow, typed operations instead of arbitrary database access.
 
-### Why schemas live in userland
+### Why do schemas live in userland?
 
-Applications own their resource shapes, policy checks, and dangerous-field decisions.
+Because applications own their resource shapes, policy checks, and dangerous-field rules.
 
-### Why explicit tools
+### Why are updates constrained?
 
-MCP tools should expose narrow, typed operations rather than raw database access.
+Because unrestricted patching is too broad for the default path. Safe write behavior should feel deliberate.
+
+### Why keep transports thin?
+
+Because the same tool definitions should work over stdio or HTTP without changing domain logic.
