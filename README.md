@@ -37,6 +37,31 @@ const NoteSchema = z.object({
 const notes = defineNotesTools(resource)
 ```
 
+### Getting started
+
+```ts
+import { startHttpServer } from 'firestore-mcp-kit'
+import {
+  type NotesContext,
+  defineNotesTools,
+} from './examples/notes/src/index.js'
+import { createMemoryFirestore } from './examples/notes/src/memory-firestore.js'
+
+const { firestore } = createMemoryFirestore()
+const tools = defineNotesTools({
+  firestore,
+  path: (id) => `notes/${id}`,
+})
+
+await startHttpServer<NotesContext>({
+  name: 'notes-example',
+  version: '0.1.0',
+  port: 8000,
+  tools,
+  getContext: async () => ({ actorId: 'local-user', canDelete: true }),
+})
+```
+
 Run the example:
 
 ```bash
