@@ -1,13 +1,14 @@
-import { defineNotesTools, type NotesContext } from './index.js'
+import {
+  createNotesResource,
+  defineNotesTools,
+  type NotesContext,
+} from './index.js'
 import { createMemoryFirestore } from './memory-firestore.js'
 import { startHttpServer } from '../../../src/index.js'
 
 const port = Number(process.env.PORT ?? '8000')
 const { firestore } = createMemoryFirestore()
-const tools = defineNotesTools({
-  firestore,
-  path: (id) => `notes/${id}`,
-})
+const tools = defineNotesTools(createNotesResource(firestore))
 
 const app = await startHttpServer<NotesContext>({
   name: 'notes-example',

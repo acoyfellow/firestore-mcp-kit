@@ -48,10 +48,7 @@ import {
 import { createMemoryFirestore } from './examples/notes/src/memory-firestore.js'
 
 const { firestore } = createMemoryFirestore()
-const tools = defineNotesTools({
-  firestore,
-  path: (id) => `notes/${id}`,
-})
+const tools = defineNotesTools(createNotesResource(firestore))
 
 await startHttpServer<NotesContext>({
   name: 'notes-example',

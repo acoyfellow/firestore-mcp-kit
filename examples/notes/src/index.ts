@@ -30,9 +30,10 @@ export const NoteSchema = z.object({
 export type Note = z.infer<typeof NoteSchema>
 
 export function createNotesResource(
-  firestore: FirestoreClient
+  firestore: FirestoreClient,
+  collection = 'notes'
 ): FirestoreResource {
-  return createFirestoreResource(firestore, (id) => `notes/${id}`)
+  return createFirestoreResource(firestore, (id) => `${collection}/${id}`)
 }
 
 const CreateNoteInput = z.object({

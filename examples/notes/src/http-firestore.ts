@@ -1,13 +1,16 @@
-import { defineNotesTools, type NotesContext } from './index.js'
+import {
+  createNotesResource,
+  defineNotesTools,
+  type NotesContext,
+} from './index.js'
 import { createFirebaseAdminFirestore } from './firestore-admin.js'
 import { startHttpServer } from '../../../src/index.js'
 
 const port = Number(process.env.PORT ?? '8000')
 const { firestore } = await createFirebaseAdminFirestore()
-const tools = defineNotesTools({
-  firestore,
-  path: (id) => `notes/${id}`,
-})
+const tools = defineNotesTools(
+  createNotesResource(firestore, 'internal_mcp_smoke_tests')
+)
 
 const app = await startHttpServer<NotesContext>({
   name: 'notes-example-firestore',
