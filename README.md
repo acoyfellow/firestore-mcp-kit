@@ -13,7 +13,7 @@ It stays intentionally small:
 
 ## Tutorial
 
-Build from the example in `examples/notes/src/index.ts`.
+Build a minimal notes MCP server end-to-end from the example in `examples/notes/src/index.ts`.
 
 The flow is:
 
@@ -59,6 +59,12 @@ await startHttpServer<NotesContext>({
 })
 ```
 
+Install dependencies:
+
+```bash
+npm install
+```
+
 Run the example:
 
 ```bash
@@ -75,6 +81,8 @@ npm run dev:http:firestore
 
 Keep credentials out of git. The repo ignores common credential file names by default.
 
+Status: early and intentionally small. The API is designed to stay narrow, explicit, and example-driven.
+
 HTTP default endpoint:
 
 - `http://localhost:8000/mcp`
@@ -82,7 +90,7 @@ HTTP default endpoint:
 
 ## How-to guides
 
-### Add a resource
+### Add a Firestore-backed resource
 
 1. Define a resource schema in userland.
 2. Define explicit input/output schemas per tool.
@@ -95,7 +103,7 @@ const resource = createFirestoreResource(firestore, (id) => `notes/${id}`)
 4. Implement tools with `defineTool(...)`.
 5. Execute them directly or expose them through a transport.
 
-### Restrict writable fields
+### Allow updates to only selected fields
 
 Use `createPatchSchema(...)` and `pickPatchedFields(...)`.
 
@@ -108,7 +116,7 @@ const NotePatchSchema = createPatchSchema(['title', 'body']).extend({
 
 This keeps update behavior explicit and avoids broad arbitrary patching.
 
-### Run over stdio
+### Expose tools over stdio
 
 ```ts
 await startStdioServer({
@@ -119,7 +127,7 @@ await startStdioServer({
 })
 ```
 
-### Run over HTTP
+### Expose tools over HTTP
 
 ```ts
 await startHttpServer({
@@ -171,6 +179,8 @@ await startHttpServer({
 - `FirestoreResource`
 
 ## Explanation
+
+These notes explain the design choices behind the library.
 
 ### Why not expose raw Firestore directly?
 
