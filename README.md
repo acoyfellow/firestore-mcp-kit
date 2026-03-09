@@ -2,6 +2,8 @@
 
 Build secure, typed MCP tools backed by Firestore.
 
+Node 20+. ESM-first. Early API.
+
 `firestore-mcp-kit` is a minimal TypeScript library for defining explicit MCP tools in userland, validating them with Zod, and wiring them to document-centric Firestore operations.
 
 It stays intentionally small:
@@ -12,6 +14,12 @@ It stays intentionally small:
 - transports should stay thin
 
 ## Tutorial
+
+Install the package:
+
+```bash
+npm install firestore-mcp-kit zod
+```
 
 Build a minimal notes MCP server end-to-end from the example in `examples/notes/src/index.ts`.
 
@@ -42,6 +50,7 @@ const notes = defineNotesTools(resource)
 ```ts
 import { startHttpServer } from 'firestore-mcp-kit'
 import {
+  createNotesResource,
   type NotesContext,
   defineNotesTools,
 } from './examples/notes/src/index.js'
@@ -59,7 +68,7 @@ await startHttpServer<NotesContext>({
 })
 ```
 
-Install dependencies:
+If you are working in this repository, install dependencies first:
 
 ```bash
 npm install
