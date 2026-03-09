@@ -4,6 +4,19 @@
   "private": false,
   "type": "module",
   "description": "Build secure, typed MCP tools backed by Firestore.",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "dist/src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -b",
     "clean": "find . -name dist -type d -prune -exec rm -rf {} + && find . -name '*.tsbuildinfo' -delete",
