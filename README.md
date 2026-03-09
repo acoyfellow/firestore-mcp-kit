@@ -21,7 +21,7 @@ Install the package:
 npm install firestore-mcp-kit zod
 ```
 
-Build a minimal notes MCP server end-to-end from the example in `examples/notes/src/index.ts`.
+Build a minimal MCP tool with explicit schemas and a Firestore-backed path.
 
 The flow is:
 
@@ -29,44 +29,56 @@ The flow is:
 2. define explicit tool input/output schemas
 3. create a Firestore resource path function
 4. implement tools with `defineTool(...)`
-5. run them over stdio or HTTP
+5. run them directly or expose them over stdio or HTTP
 
-### Minimal shape
+### Minimal package shape
 
 ```ts
+import {
+  createFirestoreResource,
+  defineTool,
+  getDocument,
+} from 'firestore-mcp-kit'
+import { z } from 'zod'
+
 const NoteSchema = z.object({
   id: z.string(),
   title: z.string(),
   body: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string(),
 })
 
-const notes = defineNotesTools(resource)
-```
+const GetNoteInputSchema = z.object({
+  id: z.string().min(1),
+})
 
-### Getting started
+const GetNoteOutputSchema = z.object({
+  note: NoteSchema,
+})
 
-```ts
-import { startHttpServer } from 'firestore-mcp-kit'
-import {
-  createNotesResource,
-  type NotesContext,
-  defineNotesTools,
-} from './examples/notes/src/index.js'
-import { createMemoryFirestore } from './examples/notes/src/memory-firestore.js'
+const resource = createFirestoreResource(firestore, (id) => `notes/${id}`)
 
-const { firestore } = createMemoryFirestore()
-const tools = defineNotesTools(createNotesResource(firestore))
+const getNote = defineTool({
+  name: 'notes.get',
+  inputSchema: GetNoteInputSchema,
+  outputSchema: GetNoteOutputSchema,
+  async execute({ input }) {
+    const note = await getDocument<z.infer<typeof NoteSchema>>(
+      resource,
+      input.id
+    )
 
-await startHttpServer<NotesContext>({
-  name: 'notes-example',
-  version: '0.1.0',
-  port: 8000,
-  tools,
-  getContext: async () => ({ actorId: 'local-user', canDelete: true }),
+    if (!note) {
+      throw new Error(`Note ${input.id} not found`)
+    }
+
+    return { note }
+  },
 })
 ```
+
+### Repo example
+
+For a full end-to-end example, use `examples/notes/src/index.ts` in this repository.
 
 If you are working in this repository, install dependencies first:
 
